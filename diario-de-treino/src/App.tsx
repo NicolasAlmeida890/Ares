@@ -1,29 +1,46 @@
-import { useState } from 'react'
+import { useEffect,useState } from 'react'
 import './App.css'
 
-type Serie = {
-  id: number
-  repeticoes: number
-  carga: number
-}
+import ExercicioCard from './components/ExercicioCard'
 
-type Exercicio = {
-  id: number
-  nome: string
-  series: Serie[]
-}
+import type {
+  Exercicio,
+  Serie,
+} from './types/treino'
 
 function App() {
-  const [nomeExercicio, setNomeExercicio] = useState('')
-  const [exercicios, setExercicios] = useState<Exercicio[]>([])
+  function limparTreino() {
+    setExercicios([])
+  }
 
-  const [repeticoes, setRepeticoes] = useState('')
-  const [carga, setCarga] = useState('')
+  const [nomeExercicio, setNomeExercicio] =
+    useState('')
 
-  function adicionarExercicio(event: React.FormEvent<HTMLFormElement>) {
+  const [exercicios, setExercicios] = useState<Exercicio[]>(() => {
+    const dadosSalvos = localStorage.getItem('exercicios')
+
+    if (!dadosSalvos) {
+      return []
+    }
+
+    return JSON.parse(dadosSalvos)
+  })
+
+  useEffect(() => {
+    localStorage.setItem(
+      'exercicios',
+      JSON.stringify(exercicios)
+    )
+  }, [exercicios])
+
+  function adicionarExercicio(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault()
 
-    if (!nomeExercicio.trim()) return
+    if (!nomeExercicio.trim()) {
+      return
+    }
 
     const novoExercicio: Exercicio = {
       id: Date.now(),
@@ -31,52 +48,136 @@ function App() {
       series: [],
     }
 
-    setExercicios([...exercicios, novoExercicio])
+    setExercicios([
+      ...exercicios,
+      novoExercicio,
+    ])
+
     setNomeExercicio('')
   }
 
-  function adicionarSerie(exercicioId: number) {
-    if (!repeticoes || !carga) return
+  function adicionarSerie(
+    exercicioId: number,
+    novaSerie: Serie
+  ) {
+    setExercicios((exerciciosAtuais) =>
+      exerciciosAtuais.map((exercicio) => {
+        if (exercicio.id === exercicioId) {
+          return {
+            ...exercicio,
+            series: [
+              ...exercicio.series,
+              novaSerie,
+            ],
+          }
+        }
 
-    const novaSerie: Serie = {
-      id: Date.now(),
-      repeticoes: Number(repeticoes),
-      carga: Number(carga),
-    }
+        return exercicio
+      })
+    )
+  }
 
-    const exerciciosAtualizados = exercicios.map((exercicio) => {
-      if (exercicio.id === exercicioId) {
+  function editarSerie(
+    exercicioId: number,
+    serieId: number,
+    repeticoes: number,
+    carga: number
+  ) {
+    setExercicios((exerciciosAtuais) =>
+      exerciciosAtuais.map((exercicio) => {
+        if (exercicio.id !== exercicioId) {
+          return exercicio
+        }
+
         return {
           ...exercicio,
-          series: [...exercicio.series, novaSerie],
+
+          series: exercicio.series.map((serie) => {
+            if (serie.id !== serieId) {
+              return serie
+            }
+
+            return {
+              ...serie,
+              repeticoes,
+              carga,
+            }
+          }),
         }
-      }
+      })
+    )
+  }
 
-      return exercicio
-    })
+  function excluirSerie(
+    exercicioId: number,
+    serieId: number
+  ) {
+    setExercicios((exerciciosAtuais) =>
+      exerciciosAtuais.map((exercicio) => {
+        if (exercicio.id !== exercicioId) {
+          return exercicio
+        }
 
-    setExercicios(exerciciosAtualizados)
+        return {
+          ...exercicio,
 
-    setRepeticoes('')
-    setCarga('')
+          series: exercicio.series.filter(
+            (serie) => serie.id !== serieId
+          ),
+        }
+      })
+    )
+  }
+
+  function excluirExercicio(
+    exercicioId: number
+  ) {
+    setExercicios((exerciciosAtuais) =>
+      exerciciosAtuais.filter(
+        (exercicio) =>
+          exercicio.id !== exercicioId
+      )
+    )
   }
 
   return (
     <main className="container">
       <h1>Diário de Treino</h1>
+      <div className="cabecalho-principal">
+        <h1>Diário de Treino</h1>
 
-      <form onSubmit={adicionarExercicio} className="formulario">
+        {exercicios.length > 0 && (
+          <button
+            type="button"
+            onClick={limparTreino}
+          >
+            Limpar treino
+          </button>
+        )}
+      </div>
+
+      <form
+        onSubmit={adicionarExercicio}
+        className="formulario"
+      >
         <label>
           Exercício
+
           <input
             type="text"
             placeholder="Ex: Supino reto"
             value={nomeExercicio}
-            onChange={(event) => setNomeExercicio(event.target.value)}
+            onChange={(event) =>
+              setNomeExercicio(
+                event.target.value
+              )
+            }
           />
         </label>
 
-        <button type="submit">Adicionar exercício</button>
+        <button type="submit">
+          Adicionar exercício
+        </button>
       </form>
 
       <section className="lista-exercicios">
@@ -85,44 +186,16 @@ function App() {
         )}
 
         {exercicios.map((exercicio) => (
-          <div key={exercicio.id} className="exercicio">
-            <h2>{exercicio.nome}</h2>
-
-            <div className="nova-serie">
-              <input
-                type="number"
-                placeholder="Repetições"
-                value={repeticoes}
-                onChange={(event) => setRepeticoes(event.target.value)}
-              />
-
-              <input
-                type="number"
-                placeholder="Carga (kg)"
-                value={carga}
-                onChange={(event) => setCarga(event.target.value)}
-              />
-
-              <button
-                type="button"
-                onClick={() => adicionarSerie(exercicio.id)}
-              >
-                Adicionar série
-              </button>
-            </div>
-
-            <div className="series">
-              {exercicio.series.map((serie, index) => (
-                <div key={serie.id} className="serie">
-                  <span>Série {index + 1}</span>
-
-                  <span>
-                    {serie.repeticoes} reps × {serie.carga} kg
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ExercicioCard
+            key={exercicio.id}
+            exercicio={exercicio}
+            onAdicionarSerie={adicionarSerie}
+            onEditarSerie={editarSerie}
+            onExcluirSerie={excluirSerie}
+            onExcluirExercicio={
+              excluirExercicio
+            }
+          />
         ))}
       </section>
     </main>
