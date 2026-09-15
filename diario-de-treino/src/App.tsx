@@ -3,34 +3,60 @@ import './App.css'
 
 type Serie = {
   id: number
-  exercicio: string
   repeticoes: number
   carga: number
 }
 
+type Exercicio = {
+  id: number
+  nome: string
+  series: Serie[]
+}
+
 function App() {
-  const [exercicio, setExercicio] = useState('')
+  const [nomeExercicio, setNomeExercicio] = useState('')
+  const [exercicios, setExercicios] = useState<Exercicio[]>([])
+
   const [repeticoes, setRepeticoes] = useState('')
   const [carga, setCarga] = useState('')
-  const [series, setSeries] = useState<Serie[]>([])
 
-  function adicionarSerie(event: React.FormEvent<HTMLFormElement>) {
+  function adicionarExercicio(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!exercicio || !repeticoes || !carga) {
-      return
+    if (!nomeExercicio.trim()) return
+
+    const novoExercicio: Exercicio = {
+      id: Date.now(),
+      nome: nomeExercicio,
+      series: [],
     }
+
+    setExercicios([...exercicios, novoExercicio])
+    setNomeExercicio('')
+  }
+
+  function adicionarSerie(exercicioId: number) {
+    if (!repeticoes || !carga) return
 
     const novaSerie: Serie = {
       id: Date.now(),
-      exercicio,
       repeticoes: Number(repeticoes),
       carga: Number(carga),
     }
 
-    setSeries([...series, novaSerie])
+    const exerciciosAtualizados = exercicios.map((exercicio) => {
+      if (exercicio.id === exercicioId) {
+        return {
+          ...exercicio,
+          series: [...exercicio.series, novaSerie],
+        }
+      }
 
-    setExercicio('')
+      return exercicio
+    })
+
+    setExercicios(exerciciosAtualizados)
+
     setRepeticoes('')
     setCarga('')
   }
@@ -39,58 +65,65 @@ function App() {
     <main className="container">
       <h1>Diário de Treino</h1>
 
-      <form onSubmit={adicionarSerie} className="formulario">
+      <form onSubmit={adicionarExercicio} className="formulario">
         <label>
           Exercício
           <input
             type="text"
             placeholder="Ex: Supino reto"
-            value={exercicio}
-            onChange={(event) => setExercicio(event.target.value)}
+            value={nomeExercicio}
+            onChange={(event) => setNomeExercicio(event.target.value)}
           />
         </label>
 
-        <label>
-          Repetições
-          <input
-            type="number"
-            placeholder="Ex: 10"
-            value={repeticoes}
-            onChange={(event) => setRepeticoes(event.target.value)}
-          />
-        </label>
-
-        <label>
-          Carga (kg)
-          <input
-            type="number"
-            placeholder="Ex: 40"
-            value={carga}
-            onChange={(event) => setCarga(event.target.value)}
-          />
-        </label>
-
-        <button type="submit">Adicionar série</button>
+        <button type="submit">Adicionar exercício</button>
       </form>
 
-      <section>
-        <h2>Séries registradas</h2>
-
-        {series.length === 0 ? (
-          <p>Nenhuma série registrada.</p>
-        ) : (
-          <div className="lista-series">
-            {series.map((serie) => (
-              <div key={serie.id} className="serie">
-                <strong>{serie.exercicio}</strong>
-
-                <span>
-                  {serie.repeticoes} repetições × {serie.carga} kg
-                </span>
-              </div>
-            ))}
-          </div>
+      <section className="lista-exercicios">
+        {exercicios.length === 0 && (
+          <p>Nenhum exercício adicionado.</p>
         )}
+
+        {exercicios.map((exercicio) => (
+          <div key={exercicio.id} className="exercicio">
+            <h2>{exercicio.nome}</h2>
+
+            <div className="nova-serie">
+              <input
+                type="number"
+                placeholder="Repetições"
+                value={repeticoes}
+                onChange={(event) => setRepeticoes(event.target.value)}
+              />
+
+              <input
+                type="number"
+                placeholder="Carga (kg)"
+                value={carga}
+                onChange={(event) => setCarga(event.target.value)}
+              />
+
+              <button
+                type="button"
+                onClick={() => adicionarSerie(exercicio.id)}
+              >
+                Adicionar série
+              </button>
+            </div>
+
+            <div className="series">
+              {exercicio.series.map((serie, index) => (
+                <div key={serie.id} className="serie">
+                  <span>Série {index + 1}</span>
+
+                  <span>
+                    {serie.repeticoes} reps × {serie.carga} kg
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </section>
     </main>
   )
