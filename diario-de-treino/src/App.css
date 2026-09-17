@@ -101,3 +101,34 @@ button:hover {
 .cabecalho-principal h1 {
   margin: 0;
 }
+
+.secao-treinos {
+  margin-bottom: 40px;
+}
+
+.lista-treinos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.treino-item {
+  display: flex;
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.treino-ativo {
+  border: 2px solid #222;
+}
+
+.treino-selecionado {
+  margin-top: 30px;
+}
+
+.mensagem-selecao {
+  text-align: center;
+  margin-top: 40px;
+}
