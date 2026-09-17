@@ -1,27 +1,28 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
-import ExercicioCard from './components/ExercicioCard'
+import TreinoLista from './components/TreinoLista'
+import TreinoDetalhes from './components/TreinoDetalhes'
 
 import type {
   Exercicio,
+  ExercicioCatalogo,
   Serie,
   Treino,
 } from './types/treino'
 
 function App() {
-  const [nomeTreino, setNomeTreino] = useState('')
-  const [nomeExercicio, setNomeExercicio] = useState('')
+  const [treinos, setTreinos] =
+    useState<Treino[]>(() => {
+      const treinosSalvos =
+        localStorage.getItem('treinos')
 
-  const [treinos, setTreinos] = useState<Treino[]>(() => {
-    const treinosSalvos = localStorage.getItem('treinos')
+      if (!treinosSalvos) {
+        return []
+      }
 
-    if (treinosSalvos) {
       return JSON.parse(treinosSalvos)
-    }
-
-    return []
-  })
+    })
 
   const [treinoAtivoId, setTreinoAtivoId] =
     useState<number | null>(null)
@@ -34,21 +35,14 @@ function App() {
   }, [treinos])
 
   const treinoAtivo = treinos.find(
-    (treino) => treino.id === treinoAtivoId
+    (treino) =>
+      treino.id === treinoAtivoId
   )
 
-  function criarTreino(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault()
-
-    if (!nomeTreino.trim()) {
-      return
-    }
-
+  function criarTreino(nome: string) {
     const novoTreino: Treino = {
       id: Date.now(),
-      nome: nomeTreino,
+      nome,
       data: new Date().toISOString(),
       exercicios: [],
     }
@@ -59,21 +53,23 @@ function App() {
     ])
 
     setTreinoAtivoId(novoTreino.id)
-    setNomeTreino('')
   }
 
   function adicionarExercicio(
-    event: React.FormEvent<HTMLFormElement>
+    exercicioCatalogo: ExercicioCatalogo
   ) {
-    event.preventDefault()
-
-    if (!nomeExercicio.trim() || !treinoAtivoId) {
+    if (!treinoAtivoId) {
       return
     }
 
     const novoExercicio: Exercicio = {
       id: Date.now(),
-      nome: nomeExercicio,
+      catalogoId: exercicioCatalogo.id,
+      nome: exercicioCatalogo.nome,
+      grupoMuscular:
+        exercicioCatalogo.grupoMuscular,
+      equipamento:
+        exercicioCatalogo.equipamento,
       series: [],
     }
 
@@ -85,6 +81,7 @@ function App() {
 
         return {
           ...treino,
+
           exercicios: [
             ...treino.exercicios,
             novoExercicio,
@@ -92,9 +89,8 @@ function App() {
         }
       })
     )
-
-    setNomeExercicio('')
   }
+
 
   function adicionarSerie(
     exercicioId: number,
@@ -111,12 +107,15 @@ function App() {
 
           exercicios: treino.exercicios.map(
             (exercicio) => {
-              if (exercicio.id !== exercicioId) {
+              if (
+                exercicio.id !== exercicioId
+              ) {
                 return exercicio
               }
 
               return {
                 ...exercicio,
+
                 series: [
                   ...exercicio.series,
                   novaSerie,
@@ -146,7 +145,9 @@ function App() {
 
           exercicios: treino.exercicios.map(
             (exercicio) => {
-              if (exercicio.id !== exercicioId) {
+              if (
+                exercicio.id !== exercicioId
+              ) {
                 return exercicio
               }
 
@@ -155,7 +156,9 @@ function App() {
 
                 series: exercicio.series.map(
                   (serie) => {
-                    if (serie.id !== serieId) {
+                    if (
+                      serie.id !== serieId
+                    ) {
                       return serie
                     }
 
@@ -189,15 +192,20 @@ function App() {
 
           exercicios: treino.exercicios.map(
             (exercicio) => {
-              if (exercicio.id !== exercicioId) {
+              if (
+                exercicio.id !== exercicioId
+              ) {
                 return exercicio
               }
 
               return {
                 ...exercicio,
-                series: exercicio.series.filter(
-                  (serie) => serie.id !== serieId
-                ),
+
+                series:
+                  exercicio.series.filter(
+                    (serie) =>
+                      serie.id !== serieId
+                  ),
               }
             }
           ),
@@ -206,7 +214,9 @@ function App() {
     )
   }
 
-  function excluirExercicio(exercicioId: number) {
+  function excluirExercicio(
+    exercicioId: number
+  ) {
     setTreinos((treinosAtuais) =>
       treinosAtuais.map((treino) => {
         if (treino.id !== treinoAtivoId) {
@@ -215,19 +225,24 @@ function App() {
 
         return {
           ...treino,
-          exercicios: treino.exercicios.filter(
-            (exercicio) =>
-              exercicio.id !== exercicioId
-          ),
+
+          exercicios:
+            treino.exercicios.filter(
+              (exercicio) =>
+                exercicio.id !== exercicioId
+            ),
         }
       })
     )
   }
 
-  function excluirTreino(treinoId: number) {
+  function excluirTreino(
+    treinoId: number
+  ) {
     setTreinos((treinosAtuais) =>
       treinosAtuais.filter(
-        (treino) => treino.id !== treinoId
+        (treino) =>
+          treino.id !== treinoId
       )
     )
 
@@ -240,127 +255,31 @@ function App() {
     <main className="container">
       <h1>Diário de Treino</h1>
 
-      <section className="secao-treinos">
-        <h2>Meus treinos</h2>
-
-        <form
-          onSubmit={criarTreino}
-          className="formulario"
-        >
-          <label>
-            Nome do treino
-
-            <input
-              type="text"
-              placeholder="Ex: Treino A - Peito"
-              value={nomeTreino}
-              onChange={(event) =>
-                setNomeTreino(event.target.value)
-              }
-            />
-          </label>
-
-          <button type="submit">
-            Criar treino
-          </button>
-        </form>
-
-        <div className="lista-treinos">
-          {treinos.length === 0 && (
-            <p>Nenhum treino criado.</p>
-          )}
-
-          {treinos.map((treino) => (
-            <div
-              key={treino.id}
-              className={`treino-item ${
-                treino.id === treinoAtivoId
-                  ? 'treino-ativo'
-                  : ''
-              }`}
-            >
-              <button
-                type="button"
-                onClick={() =>
-                  setTreinoAtivoId(treino.id)
-                }
-              >
-                {treino.nome}
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  excluirTreino(treino.id)
-                }
-              >
-                Excluir
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
+      <TreinoLista
+        treinos={treinos}
+        treinoAtivoId={treinoAtivoId}
+        onCriarTreino={criarTreino}
+        onSelecionarTreino={
+          setTreinoAtivoId
+        }
+        onExcluirTreino={excluirTreino}
+      />
 
       {treinoAtivo ? (
-        <section className="treino-selecionado">
-          <h2>{treinoAtivo.nome}</h2>
-
-          <p>
-            {new Date(
-              treinoAtivo.data
-            ).toLocaleDateString('pt-BR')}
-          </p>
-
-          <form
-            onSubmit={adicionarExercicio}
-            className="formulario"
-          >
-            <label>
-              Exercício
-
-              <input
-                type="text"
-                placeholder="Ex: Supino reto"
-                value={nomeExercicio}
-                onChange={(event) =>
-                  setNomeExercicio(
-                    event.target.value
-                  )
-                }
-              />
-            </label>
-
-            <button type="submit">
-              Adicionar exercício
-            </button>
-          </form>
-
-          <div className="lista-exercicios">
-            {treinoAtivo.exercicios.length === 0 && (
-              <p>
-                Nenhum exercício adicionado
-                neste treino.
-              </p>
-            )}
-
-            {treinoAtivo.exercicios.map(
-              (exercicio) => (
-                <ExercicioCard
-                  key={exercicio.id}
-                  exercicio={exercicio}
-                  onAdicionarSerie={
-                    adicionarSerie
-                  }
-                  onEditarSerie={editarSerie}
-                  onExcluirSerie={excluirSerie}
-                  onExcluirExercicio={
-                    excluirExercicio
-                  }
-                />
-              )
-            )}
-          </div>
-        </section>
+        <TreinoDetalhes
+          treino={treinoAtivo}
+          onAdicionarExercicio={
+            adicionarExercicio
+          }
+          onAdicionarSerie={
+            adicionarSerie
+          }
+          onEditarSerie={editarSerie}
+          onExcluirSerie={excluirSerie}
+          onExcluirExercicio={
+            excluirExercicio
+          }
+        />
       ) : (
         <p className="mensagem-selecao">
           Crie ou selecione um treino para começar.

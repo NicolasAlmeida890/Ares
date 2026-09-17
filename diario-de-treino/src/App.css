@@ -132,3 +132,44 @@ button:hover {
   text-align: center;
   margin-top: 40px;
 }
+
+.catalogo {
+  margin: 24px 0;
+}
+
+.catalogo > input {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.catalogo-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.catalogo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.catalogo-item p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.meta-exercicio {
+  margin-top: -10px;
+  color: #666;
+  font-size: 14px;
+}

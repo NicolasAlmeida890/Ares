@@ -4,9 +4,19 @@ export type Serie = {
   carga: number
 }
 
+export type ExercicioCatalogo = {
+  id: string
+  nome: string
+  grupoMuscular: string
+  equipamento: string
+}
+
 export type Exercicio = {
   id: number
+  catalogoId?: string
   nome: string
+  grupoMuscular?: string
+  equipamento?: string
   series: Serie[]
 }
 
