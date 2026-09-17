@@ -57,7 +57,22 @@ function ExercicioCard({
     return (
         <div className="exercicio">
             <div className="cabecalho-exercicio">
-                <h2>{exercicio.nome}</h2>
+                <div>
+                    <h2>{exercicio.nome}</h2>
+
+                    {(exercicio.grupoMuscular ||
+                        exercicio.equipamento) && (
+                        <p className="meta-exercicio">
+                        {exercicio.grupoMuscular}
+
+                        {exercicio.grupoMuscular &&
+                            exercicio.equipamento &&
+                            ' • '}
+
+                        {exercicio.equipamento}
+                        </p>
+                    )}
+                    </div>
 
                 <button
                     type="button"

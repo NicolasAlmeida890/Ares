@@ -1,8 +1,8 @@
-import { useState } from 'react'
-
+import CatalogoExercicios from './CatalogoExercicios'
 import ExercicioCard from './ExercicioCard'
 
 import type {
+  ExercicioCatalogo,
   Serie,
   Treino,
 } from '../types/treino'
@@ -11,7 +11,7 @@ type TreinoDetalhesProps = {
   treino: Treino
 
   onAdicionarExercicio: (
-    nome: string
+    exercicio: ExercicioCatalogo
   ) => void
 
   onAdicionarSerie: (
@@ -44,23 +44,6 @@ function TreinoDetalhes({
   onExcluirSerie,
   onExcluirExercicio,
 }: TreinoDetalhesProps) {
-  const [nomeExercicio, setNomeExercicio] =
-    useState('')
-
-  function enviarExercicio(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault()
-
-    if (!nomeExercicio.trim()) {
-      return
-    }
-
-    onAdicionarExercicio(nomeExercicio)
-
-    setNomeExercicio('')
-  }
-
   return (
     <section className="treino-selecionado">
       <h2>{treino.nome}</h2>
@@ -71,29 +54,9 @@ function TreinoDetalhes({
         ).toLocaleDateString('pt-BR')}
       </p>
 
-      <form
-        onSubmit={enviarExercicio}
-        className="formulario"
-      >
-        <label>
-          Exercício
-
-          <input
-            type="text"
-            placeholder="Ex: Supino reto"
-            value={nomeExercicio}
-            onChange={(event) =>
-              setNomeExercicio(
-                event.target.value
-              )
-            }
-          />
-        </label>
-
-        <button type="submit">
-          Adicionar exercício
-        </button>
-      </form>
+      <CatalogoExercicios
+        onSelecionar={onAdicionarExercicio}
+      />
 
       <div className="lista-exercicios">
         {treino.exercicios.length === 0 && (
