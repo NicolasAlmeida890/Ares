@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { buscarExerciciosWger } from '../services/wger'
+import { buscarExerciciosExerciseDb } from '../services/exerciseDb'
 
 import type {
   ExercicioCatalogo,
@@ -55,7 +55,7 @@ function CatalogoExercicios({
       setPesquisou(true)
 
       const exercicios =
-        await buscarExerciciosWger(busca)
+        await buscarExerciciosExerciseDb(busca)
 
       setResultados(exercicios)
 
@@ -65,9 +65,13 @@ function CatalogoExercicios({
     } catch (erro) {
       console.error(erro)
 
-      setErro(
-        'Ocorreu um erro ao buscar os exercícios.'
-      )
+      if (erro instanceof Error) {
+        setErro(erro.message)
+      } else {
+        setErro(
+          'Ocorreu um erro ao buscar os exercícios.'
+        )
+      }
     } finally {
       setCarregando(false)
     }
@@ -170,12 +174,10 @@ function CatalogoExercicios({
       >
         <input
           type="text"
-          placeholder="Ex: supino, rosca, agachamento..."
+          placeholder="Ex: bench, squat, curl..."
           value={busca}
           onChange={(event) =>
-            setBusca(
-              event.target.value
-            )
+            setBusca(event.target.value)
           }
         />
 
@@ -225,9 +227,7 @@ function CatalogoExercicios({
             Equipamento
 
             <select
-              value={
-                filtroEquipamento
-              }
+              value={filtroEquipamento}
               onChange={(event) =>
                 mudarFiltroEquipamento(
                   event.target.value
@@ -258,9 +258,7 @@ function CatalogoExercicios({
             >
               {exercicio.imagem && (
                 <img
-                  src={
-                    exercicio.imagem
-                  }
+                  src={exercicio.imagem}
                   alt={exercicio.nome}
                   className="catalogo-imagem"
                 />
@@ -301,8 +299,7 @@ function CatalogoExercicios({
 
       {pesquisou &&
         !carregando &&
-        resultadosFiltrados.length ===
-          0 &&
+        resultadosFiltrados.length === 0 &&
         !erro && (
           <p>
             Nenhum exercício encontrado.
@@ -313,9 +310,7 @@ function CatalogoExercicios({
         <div className="paginacao">
           <button
             type="button"
-            disabled={
-              paginaAtual === 1
-            }
+            disabled={paginaAtual === 1}
             onClick={() =>
               setPaginaAtual(
                 (pagina) =>
@@ -334,8 +329,7 @@ function CatalogoExercicios({
           <button
             type="button"
             disabled={
-              paginaAtual ===
-              totalPaginas
+              paginaAtual === totalPaginas
             }
             onClick={() =>
               setPaginaAtual(
