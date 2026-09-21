@@ -9,6 +9,7 @@ export type ExercicioCatalogo = {
   nome: string
   grupoMuscular: string
   equipamento: string
+  imagem?: string
 }
 
 export type Exercicio = {
@@ -17,6 +18,7 @@ export type Exercicio = {
   nome: string
   grupoMuscular?: string
   equipamento?: string
+  imagem?: string
   series: Serie[]
 }
 
