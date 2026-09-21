@@ -1,114 +1,112 @@
 import type { ExercicioCatalogo } from '../types/treino'
 
-type ExerciseDbExercise = {
-  exerciseId?: string
-  id?: string | number
-  name?: string
-
-  gifUrl?: string
-
-  target?: string
-  targetMuscles?: string[]
-
-  bodyPart?: string
-  bodyParts?: string[]
-
-  equipment?: string
-  equipments?: string[]
+type ExercicioApi = {
+  id: string
+  slug: string
+  name: string
+  muscle: string
+  bodyPart: string
+  equipment: string
+  category: string
+  secondaryMuscles?: string[]
+  instructions?: string[]
+  gifUrl: string
 }
 
-type ExerciseDbResponse = {
-  data?: ExerciseDbExercise[]
-  results?: ExerciseDbExercise[]
-  exercises?: ExerciseDbExercise[]
+type RespostaApi = {
+  exercises?: ExercicioApi[]
 }
-
-const API_ORIGIN =
-  ['https:', '', 'oss.exercisedb.dev'].join('/')
 
 const API_URL =
-  `${API_ORIGIN}/api/v1/exercises/search`
+  'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/api/en/exercises.json'
 
-const MEDIA_ORIGIN =
-  ['https:', '', 'static.exercisedb.dev'].join('/')
+let cache:
+  | ExercicioCatalogo[]
+  | null = null
+
+function normalizarTexto(texto: string) {
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+}
+
+async function carregarCatalogo():
+  Promise<ExercicioCatalogo[]> {
+  if (cache) {
+    return cache
+  }
+
+  const resposta =
+    await fetch(API_URL)
+
+  if (!resposta.ok) {
+    throw new Error(
+      `Erro ao carregar catálogo: ${resposta.status}`
+    )
+  }
+
+  const dados:
+    | ExercicioApi[]
+    | RespostaApi =
+    await resposta.json()
+
+  const exercicios =
+    Array.isArray(dados)
+      ? dados
+      : dados.exercises ?? []
+
+  cache = exercicios.map(
+    (exercicio) => ({
+      id: exercicio.id,
+      nome: exercicio.name,
+
+      grupoMuscular:
+        exercicio.muscle ||
+        exercicio.bodyPart ||
+        'Não informado',
+
+      equipamento:
+        exercicio.equipment ||
+        'Peso corporal',
+
+      imagem: exercicio.gifUrl,
+    })
+  )
+
+  console.log(
+    `Catálogo carregado: ${cache.length} exercícios`
+  )
+
+  return cache
+}
 
 export async function buscarExerciciosExerciseDb(
   termo: string
 ): Promise<ExercicioCatalogo[]> {
-  const busca = termo.trim()
+  const busca =
+    normalizarTexto(termo)
 
   if (!busca) {
     return []
   }
 
-  const parametros = new URLSearchParams({
-    q: busca,
-  })
+  const exercicios =
+    await carregarCatalogo()
 
-  const resposta = await fetch(
-    `${API_URL}?${parametros.toString()}`
-  )
+  return exercicios.filter(
+    (exercicio) => {
+      const texto =
+        normalizarTexto(
+          [
+            exercicio.nome,
+            exercicio.grupoMuscular,
+            exercicio.equipamento,
+          ].join(' ')
+        )
 
-  if (!resposta.ok) {
-    throw new Error(
-      `Erro ExerciseDB: ${resposta.status} ${resposta.statusText}`
-    )
-  }
-
-  const dados:
-    | ExerciseDbExercise[]
-    | ExerciseDbResponse =
-    await resposta.json()
-
-  let exercicios: ExerciseDbExercise[]
-
-  if (Array.isArray(dados)) {
-    exercicios = dados
-  } else {
-    exercicios =
-      dados.data ??
-      dados.results ??
-      dados.exercises ??
-      []
-  }
-
-  return exercicios.flatMap((exercicio) => {
-    const id =
-      exercicio.exerciseId ??
-      (
-        exercicio.id !== undefined
-          ? String(exercicio.id)
-          : ''
-      )
-
-    if (!id || !exercicio.name) {
-      return []
+      return texto.includes(busca)
     }
-
-    const grupoMuscular =
-      exercicio.targetMuscles?.join(', ') ||
-      exercicio.target ||
-      exercicio.bodyParts?.join(', ') ||
-      exercicio.bodyPart ||
-      'Não informado'
-
-    const equipamento =
-      exercicio.equipments?.join(', ') ||
-      exercicio.equipment ||
-      'Peso corporal'
-
-    const imagem =
-      exercicio.gifUrl ||
-      `${MEDIA_ORIGIN}/media/${id}.gif`
-
-    return [
-      {
-        id,
-        nome: exercicio.name,
-        grupoMuscular,
-        equipamento,
-        imagem,
-      },
-    ]
-  })
+  )
 }

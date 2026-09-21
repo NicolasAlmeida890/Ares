@@ -221,3 +221,17 @@ button:hover {
     height: 160px;
   }
 }
+
+.info-exercicio {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.exercicio-imagem {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #f5f5f5;
+}

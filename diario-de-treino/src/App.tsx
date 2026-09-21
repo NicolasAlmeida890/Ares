@@ -70,6 +70,7 @@ function App() {
         exercicioCatalogo.grupoMuscular,
       equipamento:
         exercicioCatalogo.equipamento,
+      imagem: exercicioCatalogo.imagem,
       series: [],
     }
 
