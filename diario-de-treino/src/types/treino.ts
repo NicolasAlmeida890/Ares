@@ -28,3 +28,12 @@ export type Treino = {
   data: string
   exercicios: Exercicio[]
 }
+
+export type SessaoTreino = {
+  id: number
+  treinoId: number
+  nomeTreino: string
+  iniciadaEm: string
+  finalizadaEm: string | null
+  exercicios: Exercicio[]
+}
