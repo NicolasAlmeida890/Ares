@@ -22,9 +22,7 @@ type ExercicioCardProps = {
     serieId: number
   ) => void
 
-  onExcluirExercicio: (
-    exercicioId: number
-  ) => void
+  onExcluirExercicio: (exercicioId: number) => void
 }
 
 function ExercicioCard({
@@ -34,27 +32,48 @@ function ExercicioCard({
   onExcluirSerie,
   onExcluirExercicio,
 }: ExercicioCardProps) {
-  const [repeticoes, setRepeticoes] =
-    useState('')
-
-  const [carga, setCarga] =
-    useState('')
+  const [repeticoes, setRepeticoes] = useState('')
+  const [carga, setCarga] = useState('')
 
   function adicionarSerie() {
-    if (!repeticoes || !carga) {
+    if (
+      repeticoes.trim() === '' ||
+      carga.trim() === ''
+    ) {
+      window.alert('Preencha as repetições e a carga.')
+      return
+    }
+
+    const repeticoesNumero = Number(repeticoes)
+    const cargaNumero = Number(carga)
+
+    if (
+      !Number.isInteger(repeticoesNumero) ||
+      repeticoesNumero <= 0
+    ) {
+      window.alert(
+        'As repetições devem ser um número inteiro maior que zero.'
+      )
+      return
+    }
+
+    if (
+      !Number.isFinite(cargaNumero) ||
+      cargaNumero < 0
+    ) {
+      window.alert(
+        'A carga deve ser um número maior ou igual a zero.'
+      )
       return
     }
 
     const novaSerie: Serie = {
       id: Date.now(),
-      repeticoes: Number(repeticoes),
-      carga: Number(carga),
+      repeticoes: repeticoesNumero,
+      carga: cargaNumero,
     }
 
-    onAdicionarSerie(
-      exercicio.id,
-      novaSerie
-    )
+    onAdicionarSerie(exercicio.id, novaSerie)
 
     setRepeticoes('')
     setCarga('')
@@ -93,9 +112,7 @@ function ExercicioCard({
         <button
           type="button"
           onClick={() =>
-            onExcluirExercicio(
-              exercicio.id
-            )
+            onExcluirExercicio(exercicio.id)
           }
         >
           Excluir exercício
@@ -105,23 +122,25 @@ function ExercicioCard({
       <div className="nova-serie">
         <input
           type="number"
+          min="1"
+          step="1"
           placeholder="Repetições"
+          aria-label="Repetições"
           value={repeticoes}
           onChange={(event) =>
-            setRepeticoes(
-              event.target.value
-            )
+            setRepeticoes(event.target.value)
           }
         />
 
         <input
           type="number"
+          min="0"
+          step="any"
           placeholder="Carga (kg)"
+          aria-label="Carga em quilogramas"
           value={carga}
           onChange={(event) =>
-            setCarga(
-              event.target.value
-            )
+            setCarga(event.target.value)
           }
         />
 
@@ -135,38 +154,27 @@ function ExercicioCard({
 
       <div className="series">
         {exercicio.series.length === 0 && (
-          <p>
-            Nenhuma série registrada.
-          </p>
+          <p>Nenhuma série registrada.</p>
         )}
 
-        {exercicio.series.map(
-          (serie, index) => (
-            <SerieItem
-              key={serie.id}
-              serie={serie}
-              numero={index + 1}
-              onEditar={(
+        {exercicio.series.map((serie, index) => (
+          <SerieItem
+            key={serie.id}
+            serie={serie}
+            numero={index + 1}
+            onEditar={(serieId, repeticoes, carga) =>
+              onEditarSerie(
+                exercicio.id,
                 serieId,
                 repeticoes,
                 carga
-              ) =>
-                onEditarSerie(
-                  exercicio.id,
-                  serieId,
-                  repeticoes,
-                  carga
-                )
-              }
-              onExcluir={(serieId) =>
-                onExcluirSerie(
-                  exercicio.id,
-                  serieId
-                )
-              }
-            />
-          )
-        )}
+              )
+            }
+            onExcluir={(serieId) =>
+              onExcluirSerie(exercicio.id, serieId)
+            }
+          />
+        ))}
       </div>
     </div>
   )
