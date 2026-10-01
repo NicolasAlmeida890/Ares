@@ -235,3 +235,26 @@ button:hover {
   border-radius: 10px;
   background: #f5f5f5;
 }
+
+.resumo-sessao {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(150px, 1fr)
+  );
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.resumo-sessao p {
+  margin: 0;
+  padding: 12px;
+  background: #f3f4f6;
+  color: #1f2937;
+  border-radius: 8px;
+}
+
+.resumo-sessao strong {
+  display: block;
+  margin-bottom: 6px;
+}

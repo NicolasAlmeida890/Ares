@@ -1,3 +1,5 @@
+import ResumoSessao from './components/ResumoSessao'
+import UltimoDesempenho from './components/UltimoDesempenho'
 import ExercicioCard from './components/ExercicioCard'
 import { useEffect, useState } from 'react'
 import './App.css'
@@ -439,14 +441,21 @@ function App() {
             )}
 
             {sessaoAtual.exercicios.map((exercicio) => (
-              <ExercicioCard
-                key={`${sessaoAtual.id}-${exercicio.id}`}
-                exercicio={exercicio}
-                onAdicionarSerie={adicionarSerieNaSessao}
-                onEditarSerie={editarSerieNaSessao}
-                onExcluirSerie={excluirSerieDaSessao}
-                onExcluirExercicio={excluirExercicioDaSessao}
-              />
+              <div key={`${sessaoAtual.id}-${exercicio.id}`}>
+                <UltimoDesempenho
+                  exercicio={exercicio}
+                  treinoId={sessaoAtual.treinoId}
+                  historico={historico}
+                />
+
+                <ExercicioCard
+                  exercicio={exercicio}
+                  onAdicionarSerie={adicionarSerieNaSessao}
+                  onEditarSerie={editarSerieNaSessao}
+                  onExcluirSerie={excluirSerieDaSessao}
+                  onExcluirExercicio={excluirExercicioDaSessao}
+                />
+              </div>
             ))}
           </div>
 
@@ -523,6 +532,8 @@ function App() {
                 sessao.iniciadaEm
               ).toLocaleString('pt-BR')}
             </summary>
+            
+            <ResumoSessao sessao={sessao} />
 
             {sessao.finalizadaEm && (
               <p>
