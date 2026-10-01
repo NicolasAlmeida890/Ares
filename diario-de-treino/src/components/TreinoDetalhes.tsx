@@ -1,5 +1,4 @@
 import CatalogoExercicios from './CatalogoExercicios'
-import ExercicioCard from './ExercicioCard'
 
 import type {
   ExercicioCatalogo,
@@ -14,6 +13,10 @@ type TreinoDetalhesProps = {
     exercicio: ExercicioCatalogo
   ) => void
 
+  onExcluirExercicio: (exercicioId: number) => void
+
+  // Mantidos temporariamente para compatibilidade
+  // com as propriedades enviadas pelo App.tsx.
   onAdicionarSerie: (
     exercicioId: number,
     serie: Serie
@@ -30,28 +33,20 @@ type TreinoDetalhesProps = {
     exercicioId: number,
     serieId: number
   ) => void
-
-  onExcluirExercicio: (
-    exercicioId: number
-  ) => void
 }
 
 function TreinoDetalhes({
   treino,
   onAdicionarExercicio,
-  onAdicionarSerie,
-  onEditarSerie,
-  onExcluirSerie,
   onExcluirExercicio,
 }: TreinoDetalhesProps) {
   return (
     <section className="treino-selecionado">
-      <h2>{treino.nome}</h2>
+      <h2>Ficha: {treino.nome}</h2>
 
       <p>
-        {new Date(
-          treino.data
-        ).toLocaleDateString('pt-BR')}
+        Organize os exercícios aqui. Para registrar
+        repetições e cargas, clique em Iniciar treino.
       </p>
 
       <CatalogoExercicios
@@ -61,21 +56,54 @@ function TreinoDetalhes({
       <div className="lista-exercicios">
         {treino.exercicios.length === 0 && (
           <p>
-            Nenhum exercício adicionado neste treino.
+            Adicione um exercício pelo catálogo para
+            começar a montar sua ficha.
           </p>
         )}
 
         {treino.exercicios.map((exercicio) => (
-          <ExercicioCard
+          <div
             key={exercicio.id}
-            exercicio={exercicio}
-            onAdicionarSerie={onAdicionarSerie}
-            onEditarSerie={onEditarSerie}
-            onExcluirSerie={onExcluirSerie}
-            onExcluirExercicio={
-              onExcluirExercicio
-            }
-          />
+            className="exercicio"
+          >
+            <div className="cabecalho-exercicio">
+              <div className="info-exercicio">
+                {exercicio.imagem && (
+                  <img
+                    src={exercicio.imagem}
+                    alt={exercicio.nome}
+                    className="exercicio-imagem"
+                  />
+                )}
+
+                <div>
+                  <h3>{exercicio.nome}</h3>
+
+                  {(exercicio.grupoMuscular ||
+                    exercicio.equipamento) && (
+                    <p className="meta-exercicio">
+                      {exercicio.grupoMuscular}
+
+                      {exercicio.grupoMuscular &&
+                        exercicio.equipamento &&
+                        ' • '}
+
+                      {exercicio.equipamento}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  onExcluirExercicio(exercicio.id)
+                }
+              >
+                Remover da ficha
+              </button>
+            </div>
+          </div>
         ))}
       </div>
     </section>
