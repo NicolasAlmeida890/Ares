@@ -1,3 +1,4 @@
+import EditarNomeTreino from './components/EditarNomeTreino'
 import ResumoSessao from './components/ResumoSessao'
 import UltimoDesempenho from './components/UltimoDesempenho'
 import ExercicioCard from './components/ExercicioCard'
@@ -235,6 +236,22 @@ function App() {
     }
   }
 
+  function renomearTreino(nome: string) {
+    const nomeLimpo = nome.trim()
+
+    if (treinoAtivoId === null || !nomeLimpo) {
+      return
+    }
+
+    setTreinos((treinosAtuais) =>
+      treinosAtuais.map((treino) =>
+        treino.id === treinoAtivoId
+          ? { ...treino, nome: nomeLimpo }
+          : treino
+      )
+    )
+  }
+
   function criarTreino(nome: string) {
     const novoTreino: Treino = {
       id: Date.now(),
@@ -395,6 +412,12 @@ function App() {
               >
                 Iniciar treino
               </button>
+
+              <EditarNomeTreino
+                key={treinoAtivo.id}
+                nomeAtual={treinoAtivo.nome}
+                onSalvar={renomearTreino}
+              />
 
               <TreinoDetalhes
                 treino={treinoAtivo}
