@@ -2,7 +2,6 @@ import CatalogoExercicios from './CatalogoExercicios'
 
 import type {
   ExercicioCatalogo,
-  Serie,
   Treino,
 } from '../types/treino'
 
@@ -14,25 +13,6 @@ type TreinoDetalhesProps = {
   ) => void
 
   onExcluirExercicio: (exercicioId: number) => void
-
-  // Mantidos temporariamente para compatibilidade
-  // com as propriedades enviadas pelo App.tsx.
-  onAdicionarSerie: (
-    exercicioId: number,
-    serie: Serie
-  ) => void
-
-  onEditarSerie: (
-    exercicioId: number,
-    serieId: number,
-    repeticoes: number,
-    carga: number
-  ) => void
-
-  onExcluirSerie: (
-    exercicioId: number,
-    serieId: number
-  ) => void
 }
 
 function TreinoDetalhes({

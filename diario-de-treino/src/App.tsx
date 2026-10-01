@@ -285,107 +285,6 @@ function App() {
     )
   }
 
-  function adicionarSerie(
-    exercicioId: number,
-    novaSerie: Serie
-  ) {
-    setTreinos((treinosAtuais) =>
-      treinosAtuais.map((treino) => {
-        if (treino.id !== treinoAtivoId) {
-          return treino
-        }
-
-        return {
-          ...treino,
-          exercicios: treino.exercicios.map(
-            (exercicio) => {
-              if (exercicio.id !== exercicioId) {
-                return exercicio
-              }
-
-              return {
-                ...exercicio,
-                series: [...exercicio.series, novaSerie],
-              }
-            }
-          ),
-        }
-      })
-    )
-  }
-
-  function editarSerie(
-    exercicioId: number,
-    serieId: number,
-    repeticoes: number,
-    carga: number
-  ) {
-    setTreinos((treinosAtuais) =>
-      treinosAtuais.map((treino) => {
-        if (treino.id !== treinoAtivoId) {
-          return treino
-        }
-
-        return {
-          ...treino,
-          exercicios: treino.exercicios.map(
-            (exercicio) => {
-              if (exercicio.id !== exercicioId) {
-                return exercicio
-              }
-
-              return {
-                ...exercicio,
-                series: exercicio.series.map((serie) => {
-                  if (serie.id !== serieId) {
-                    return serie
-                  }
-
-                  return {
-                    ...serie,
-                    repeticoes,
-                    carga,
-                  }
-                }),
-              }
-            }
-          ),
-        }
-      })
-    )
-  }
-
-  function excluirSerie(
-    exercicioId: number,
-    serieId: number
-  ) {
-    setTreinos((treinosAtuais) =>
-      treinosAtuais.map((treino) => {
-        if (treino.id !== treinoAtivoId) {
-          return treino
-        }
-
-        return {
-          ...treino,
-          exercicios: treino.exercicios.map(
-            (exercicio) => {
-              if (exercicio.id !== exercicioId) {
-                return exercicio
-              }
-
-              return {
-                ...exercicio,
-                series: exercicio.series.filter(
-                  (serie) => serie.id !== serieId
-                ),
-              }
-            }
-          ),
-        }
-      })
-    )
-  }
-
   function excluirExercicio(exercicioId: number) {
     setTreinos((treinosAtuais) =>
       treinosAtuais.map((treino) => {
@@ -500,9 +399,6 @@ function App() {
               <TreinoDetalhes
                 treino={treinoAtivo}
                 onAdicionarExercicio={adicionarExercicio}
-                onAdicionarSerie={adicionarSerie}
-                onEditarSerie={editarSerie}
-                onExcluirSerie={excluirSerie}
                 onExcluirExercicio={excluirExercicio}
               />
             </>
