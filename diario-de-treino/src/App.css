@@ -258,3 +258,14 @@ button:hover {
   display: block;
   margin-bottom: 6px;
 }
+
+.acoes-exercicio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.acoes-exercicio button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

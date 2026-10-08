@@ -252,6 +252,62 @@ function App() {
     )
   }
 
+  function moverExercicio(
+    exercicioId: number,
+    direcao: 'cima' | 'baixo'
+  ) {
+    if (treinoAtivoId === null) {
+      return
+    }
+
+    setTreinos((treinosAtuais) =>
+      treinosAtuais.map((treino) => {
+        if (treino.id !== treinoAtivoId) {
+          return treino
+        }
+
+        const indiceAtual = treino.exercicios.findIndex(
+          (exercicio) => exercicio.id === exercicioId
+        )
+
+        const novoIndice =
+          direcao === 'cima'
+            ? indiceAtual - 1
+            : indiceAtual + 1
+
+        if (
+          indiceAtual === -1 ||
+          novoIndice < 0 ||
+          novoIndice >= treino.exercicios.length
+        ) {
+          return treino
+        }
+
+        const exercicios = [...treino.exercicios]
+
+        const [exercicioMovido] = exercicios.splice(
+          indiceAtual,
+          1
+        )
+
+        if (!exercicioMovido) {
+          return treino
+        }
+
+        exercicios.splice(
+          novoIndice,
+          0,
+          exercicioMovido
+        )
+
+        return {
+          ...treino,
+          exercicios,
+        }
+      })
+    )
+  }
+
   function criarTreino(nome: string) {
     const novoTreino: Treino = {
       id: Date.now(),
@@ -423,6 +479,7 @@ function App() {
                 treino={treinoAtivo}
                 onAdicionarExercicio={adicionarExercicio}
                 onExcluirExercicio={excluirExercicio}
+                onMoverExercicio={moverExercicio}
               />
             </>
           ) : (

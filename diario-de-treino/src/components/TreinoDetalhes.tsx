@@ -13,12 +13,18 @@ type TreinoDetalhesProps = {
   ) => void
 
   onExcluirExercicio: (exercicioId: number) => void
+
+  onMoverExercicio: (
+    exercicioId: number,
+    direcao: 'cima' | 'baixo'
+  ) => void
 }
 
 function TreinoDetalhes({
   treino,
   onAdicionarExercicio,
   onExcluirExercicio,
+  onMoverExercicio,
 }: TreinoDetalhesProps) {
   return (
     <section className="treino-selecionado">
@@ -41,7 +47,7 @@ function TreinoDetalhes({
           </p>
         )}
 
-        {treino.exercicios.map((exercicio) => (
+        {treino.exercicios.map((exercicio, index) => (
           <div
             key={exercicio.id}
             className="exercicio"
@@ -57,7 +63,9 @@ function TreinoDetalhes({
                 )}
 
                 <div>
-                  <h3>{exercicio.nome}</h3>
+                  <h3>
+                    {index + 1}. {exercicio.nome}
+                  </h3>
 
                   {(exercicio.grupoMuscular ||
                     exercicio.equipamento) && (
@@ -74,14 +82,40 @@ function TreinoDetalhes({
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() =>
-                  onExcluirExercicio(exercicio.id)
-                }
-              >
-                Remover da ficha
-              </button>
+              <div className="acoes-exercicio">
+                <button
+                  type="button"
+                  disabled={index === 0}
+                  aria-label={`Mover ${exercicio.nome} para cima`}
+                  onClick={() =>
+                    onMoverExercicio(exercicio.id, 'cima')
+                  }
+                >
+                  Subir
+                </button>
+
+                <button
+                  type="button"
+                  disabled={
+                    index === treino.exercicios.length - 1
+                  }
+                  aria-label={`Mover ${exercicio.nome} para baixo`}
+                  onClick={() =>
+                    onMoverExercicio(exercicio.id, 'baixo')
+                  }
+                >
+                  Descer
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    onExcluirExercicio(exercicio.id)
+                  }
+                >
+                  Remover da ficha
+                </button>
+              </div>
             </div>
           </div>
         ))}
