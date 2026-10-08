@@ -269,3 +269,9 @@ button:hover {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+.edicao-ficha {
+  display: grid;
+  gap: 16px;
+  margin: 16px 0;
+}

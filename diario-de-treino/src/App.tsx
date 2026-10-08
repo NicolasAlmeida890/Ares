@@ -1,4 +1,4 @@
-import EditarNomeTreino from './components/EditarNomeTreino'
+
 import ResumoSessao from './components/ResumoSessao'
 import UltimoDesempenho from './components/UltimoDesempenho'
 import ExercicioCard from './components/ExercicioCard'
@@ -469,14 +469,10 @@ function App() {
                 Iniciar treino
               </button>
 
-              <EditarNomeTreino
-                key={treinoAtivo.id}
-                nomeAtual={treinoAtivo.nome}
-                onSalvar={renomearTreino}
-              />
-
               <TreinoDetalhes
+                key={treinoAtivo.id}
                 treino={treinoAtivo}
+                onRenomear={renomearTreino}
                 onAdicionarExercicio={adicionarExercicio}
                 onExcluirExercicio={excluirExercicio}
                 onMoverExercicio={moverExercicio}
