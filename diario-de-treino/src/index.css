@@ -1,15 +1,141 @@
+:root {
+  color-scheme: dark;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  --fundo: #101217;
+  --superficie: #191d25;
+  --superficie-alta: #242a35;
+  --borda: #343c4a;
+  --texto: #f3f5f9;
+  --texto-secundario: #b1bac9;
+  --destaque: #f36573;
+  --primario: #c82c3e;
+  --primario-hover: #dc354a;
+  --perigo-fundo: #351f28;
+  --perigo-texto: #ff9da6;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
+  min-width: 320px;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  color: #222;
+  background:
+    radial-gradient(ellipse at 15% 0%, #632c3426, transparent 45%),
+    var(--fundo);
+  color: var(--texto);
+  line-height: 1.6;
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  min-height: 44px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+}
+
+button {
+  padding: 10px 16px;
+  background: var(--superficie-alta);
+  color: var(--texto);
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: #303847;
+  border-color: #647086;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input,
+select,
+textarea {
+  min-width: 0;
+  padding: 10px 12px;
+  background: #11151c;
+  color: var(--texto);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #909caf;
+}
+
+select {
+  max-width: 100%;
+}
+
+label {
+  color: var(--texto-secundario);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--destaque);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: 1.4rem;
+}
+
+h3 {
+  font-size: 1.08rem;
+}
+
+a {
+  color: var(--destaque);
+}
+
+::selection {
+  background: #773342;
+  color: white;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
