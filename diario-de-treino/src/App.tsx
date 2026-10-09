@@ -308,6 +308,33 @@ function App() {
     )
   }
 
+  function duplicarTreino() {
+    if (!treinoAtivo) {
+      return
+    }
+
+    const copia: Treino = {
+      ...treinoAtivo,
+      id: Date.now(),
+      nome: `${treinoAtivo.nome.slice(0, 72)} (cópia)`,
+      data: new Date().toISOString(),
+
+      exercicios: treinoAtivo.exercicios.map(
+        (exercicio) => ({
+          ...exercicio,
+          series: [],
+        })
+      ),
+    }
+
+    setTreinos((treinosAtuais) => [
+      ...treinosAtuais,
+      copia,
+    ])
+
+    setTreinoAtivoId(copia.id)
+  }
+
   function criarTreino(nome: string) {
     const novoTreino: Treino = {
       id: Date.now(),
@@ -473,6 +500,7 @@ function App() {
                 key={treinoAtivo.id}
                 treino={treinoAtivo}
                 onRenomear={renomearTreino}
+                onDuplicar={duplicarTreino}
                 onAdicionarExercicio={adicionarExercicio}
                 onExcluirExercicio={excluirExercicio}
                 onMoverExercicio={moverExercicio}

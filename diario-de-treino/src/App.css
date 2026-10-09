@@ -697,3 +697,23 @@ details > :not(summary) {
     overflow-wrap: anywhere;
   }
 }
+
+.acoes-ficha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.botao-secundario {
+  border-color: var(--borda);
+  background: transparent;
+  color: var(--texto-secundario);
+}
+
+.botao-secundario:hover:not(:disabled) {
+  border-color: var(--texto-secundario);
+  background: var(--superficie-alta);
+  color: var(--texto);
+}

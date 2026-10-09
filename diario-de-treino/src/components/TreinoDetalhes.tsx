@@ -11,6 +11,7 @@ type TreinoDetalhesProps = {
   treino: Treino
 
   onRenomear: (nome: string) => void
+  onDuplicar: () => void
 
   onAdicionarExercicio: (
     exercicio: ExercicioCatalogo
@@ -27,6 +28,7 @@ type TreinoDetalhesProps = {
 function TreinoDetalhes({
   treino,
   onRenomear,
+  onDuplicar,
   onAdicionarExercicio,
   onExcluirExercicio,
   onMoverExercicio,
@@ -43,14 +45,26 @@ function TreinoDetalhes({
           : 'Confira os exercícios da sua ficha. Para registrar séries, clique em Iniciar treino.'}
       </p>
 
-      <button
-        type="button"
-        onClick={() =>
-          setEditando((valorAtual) => !valorAtual)
-        }
-      >
-        {editando ? 'Concluir edição' : 'Editar ficha'}
-      </button>
+      <div className="acoes-ficha">
+        <button
+          type="button"
+          onClick={() =>
+            setEditando((valorAtual) => !valorAtual)
+          }
+        >
+          {editando ? 'Concluir edição' : 'Editar ficha'}
+        </button>
+
+        {!editando && (
+          <button
+            type="button"
+            className="botao-secundario"
+            onClick={onDuplicar}
+          >
+            Duplicar ficha
+          </button>
+        )}
+      </div>
 
       {editando && (
         <div className="edicao-ficha">
