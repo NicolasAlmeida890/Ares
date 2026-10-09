@@ -1,4 +1,4 @@
-
+import EvolucaoCarga from './components/EvolucaoCarga'
 import ResumoSessao from './components/ResumoSessao'
 import UltimoDesempenho from './components/UltimoDesempenho'
 import ExercicioCard from './components/ExercicioCard'
@@ -504,6 +504,12 @@ function App() {
                 onAdicionarExercicio={adicionarExercicio}
                 onExcluirExercicio={excluirExercicio}
                 onMoverExercicio={moverExercicio}
+              />
+              <EvolucaoCarga
+                key={`evolucao-${treinoAtivo.id}`}
+                treinoId={treinoAtivo.id}
+                exercicios={treinoAtivo.exercicios}
+                historico={historico}
               />
             </>
           ) : (
