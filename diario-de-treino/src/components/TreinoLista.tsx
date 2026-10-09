@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { FormEvent } from 'react'
 import type { Treino } from '../types/treino'
 
 type TreinoListaProps = {
@@ -17,80 +18,129 @@ function TreinoLista({
   onExcluirTreino,
 }: TreinoListaProps) {
   const [nomeTreino, setNomeTreino] = useState('')
+  const [formularioAberto, setFormularioAberto] = useState(false)
+  const [erro, setErro] = useState('')
 
-  function enviarTreino(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  function cancelarCriacao() {
+    setNomeTreino('')
+    setErro('')
+    setFormularioAberto(false)
+  }
+
+  function enviarTreino(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!nomeTreino.trim()) {
+    const nomeLimpo = nomeTreino.trim()
+
+    if (!nomeLimpo) {
+      setErro('Digite um nome para a ficha.')
       return
     }
 
-    onCriarTreino(nomeTreino)
-
-    setNomeTreino('')
+    onCriarTreino(nomeLimpo)
+    cancelarCriacao()
   }
 
   return (
-    <section className="secao-treinos">
-      <h2>Meus treinos</h2>
+    <section
+      className="secao-treinos"
+      aria-labelledby="titulo-minhas-fichas"
+    >
+      <div className="cabecalho-secao">
+        <div>
+          <p className="rotulo-secao">Planejamento</p>
+          <h2 id="titulo-minhas-fichas">Minhas fichas</h2>
+          <p>Escolha uma ficha para começar seu treino.</p>
+        </div>
 
-      <form
-        onSubmit={enviarTreino}
-        className="formulario"
-      >
-        <label>
-          Nome do treino
+        {!formularioAberto && (
+          <button
+            type="button"
+            className="botao-primario"
+            onClick={() => setFormularioAberto(true)}
+          >
+            Nova ficha
+          </button>
+        )}
+      </div>
 
-          <input
-            type="text"
-            placeholder="Ex: Treino A - Peito"
-            value={nomeTreino}
-            onChange={(event) =>
-              setNomeTreino(event.target.value)
-            }
-          />
-        </label>
+      {formularioAberto && (
+        <form onSubmit={enviarTreino} className="formulario">
+          <label>
+            Nome da nova ficha
+            <input
+              type="text"
+              placeholder="Ex.: Treino A — Peito e tríceps"
+              value={nomeTreino}
+              maxLength={80}
+              aria-invalid={Boolean(erro)}
+              aria-describedby={erro ? 'erro-nova-ficha' : undefined}
+              onChange={(event) => {
+                setNomeTreino(event.target.value)
+                setErro('')
+              }}
+              autoFocus
+            />
+          </label>
 
-        <button type="submit">
-          Criar treino
-        </button>
-      </form>
+          <div className="acoes-formulario">
+            <button type="submit">Criar ficha</button>
+            <button type="button" onClick={cancelarCriacao}>
+              Cancelar
+            </button>
+          </div>
+
+          {erro && (
+            <p id="erro-nova-ficha" className="mensagem-erro" role="alert">
+              {erro}
+            </p>
+          )}
+        </form>
+      )}
 
       <div className="lista-treinos">
         {treinos.length === 0 && (
-          <p>Nenhum treino criado.</p>
+          <div className="estado-vazio">
+            <strong>Sua primeira ficha começa aqui.</strong>
+            <p>Clique em Nova ficha para organizar seus exercícios.</p>
+          </div>
         )}
 
-        {treinos.map((treino) => (
-          <div
-            key={treino.id}
-            className={`treino-item ${
-              treino.id === treinoAtivoId
-                ? 'treino-ativo'
-                : ''
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() =>
-                onSelecionarTreino(treino.id)
-              }
-            >
-              {treino.nome}
-            </button>
+        {treinos.map((treino) => {
+          const selecionado = treino.id === treinoAtivoId
+          const quantidade = treino.exercicios.length
 
-            <button
-              type="button"
-              onClick={() =>
-                onExcluirTreino(treino.id)
-              }
+          return (
+            <div
+              key={treino.id}
+              className={`treino-item ${selecionado ? 'treino-ativo' : ''}`}
             >
-              Excluir
-            </button>
-          </div>
-        ))}
+              <button
+                type="button"
+                className="treino-seletor"
+                aria-pressed={selecionado}
+                onClick={() => onSelecionarTreino(treino.id)}
+              >
+                <span className="treino-nome">{treino.nome}</span>
+                <span className="treino-meta">
+                  {quantidade} {quantidade === 1 ? 'exercício' : 'exercícios'}
+                </span>
+                <span className="treino-status">
+                  {selecionado ? 'Selecionada' : 'Ver ficha'}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className="botao-perigo"
+                aria-label={`Excluir ficha ${treino.nome}`}
+                onClick={() => onExcluirTreino(treino.id)}
+              >
+                Excluir
+              </button>
+            </div>
+          )
+        })}
       </div>
     </section>
   )
